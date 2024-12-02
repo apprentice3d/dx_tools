@@ -54,7 +54,7 @@ For Linux/MacOS systems:
 ```
 
 or you can set an alias:
-```commandline
+```
 alias dx-tools="python3 main.py"
 ```
 
@@ -64,22 +64,16 @@ and call the app with further commands:
 dx-tools gethubs
 ```
 
+For the entire list of commands check [the documentation for the app](./docs.md).
+
 ## Demo Video
 Click the image below to check the demo video:
 [![dx-tools Workflow](/youtube.png)](https://youtu.be/W7MzO_9UPx4) 
 
-## Troubleshooting
+## Knowing issues
 
-1. When installing depencencies, for such similar error as below, try to upgrade [pip](https://pip.pypa.io/en/stable/installing/)
-```
-Could not fetch URL https://pypi.python.org/simple/pathlib/: There was a problem confirming the ssl certificate: [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 alert protocol version (_ssl.c:661)
-```
+- For brevity purpose, the error handling is missing from the code and almost all errors will default to `"ERROR: The Auth token expired"`
 
-2. When running the code, it failed with such error below,  check if TLS1.2 and above is supported with SSL request with this Python enviroment. 
-```
-requests.exceptions.SSLError: HTTPSConnectionPool(host='developer.api.autodesk.com', port=443): Max retries exceeded with url: /authentication/v2/token (Caused by SSLError(SSLEOFError(8, u'EOF occurred in violation of protocol (_ssl.c:590)'),))
-```
-The best is to upgrade Python to version which > 3.13.
 
 ## Further Reading
 * [Blog post "Creating Data Exchanges using GraphQL API"](https://aps.autodesk.com/blog)

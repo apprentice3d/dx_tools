@@ -6,9 +6,7 @@ from config import AUTH_TOKEN
 from typing_extensions import Annotated
 from data_exchange.utils import decode_item
 from data_exchange.query import queryHubs, queryProjects, queryFolder, queryExchange, get_item_data, \
-    create_exchange_from_revit
-from prettytable import PrettyTable
-
+    create_exchange_from_revit, create_exchange_from_ifc
 
 __app_name__ = "dx-tools"
 __version__ = "0.1.0"
@@ -108,9 +106,9 @@ def info(item_id: str, raw: Annotated [bool, typer.Option(help="get the views as
 
 @item_app.command()
 def createExchange(id: str,
-                   name: Annotated [str, typer.Option(help="name of to be created exchange")] = "",
-                   view: Annotated [str, typer.Option(help="view name that should be used for creating the exchange")] = "",
-                   folder: Annotated [str, typer.Option(help="folder id where the exchange should be created")] = ""):
+                   name: Annotated [str, typer.Option(help="name of to be created exchange")],
+                   folder: Annotated [str, typer.Option(help="folder id where the exchange should be created")],
+                   view: Annotated [str, typer.Option(help="view name that should be used for creating the exchange")] = ""):
     """
        Create an exchange given the id of the source file
     """
@@ -119,15 +117,20 @@ def createExchange(id: str,
     response = None
     item = get_item_data(AUTH_TOKEN, id)
     if item.get_format() == "rvt":
+        if view == "":
+            print("For Revit source files, you have to specify the view name")
+            return
         print(f"Creating exchange from Revit file with {id} and saving it in {destination_folder}.")
-        response = create_exchange_from_revit(AUTH_TOKEN, id, view, destination_folder)
+        response = create_exchange_from_revit(AUTH_TOKEN, id, view, destination_folder, name)
     if item.get_format() == "ifc":
         print(f"Creating exchange from IFC file with {id} and saving it in {destination_folder}.")
-        response = createExchangeFromIFC(AUTH_TOKEN, id, destination_folder)
-    if response == None:
+        response = create_exchange_from_ifc(AUTH_TOKEN, id, destination_folder, name)
+    if response is None:
         print("ERROR: Unsupported format for creating the exchange.")
     else:
-        print(f"Task for {id} was submitted successfully.")
+        exchange_id = response["id"]
+        exchange_name = response["name"]
+        print(f"The exchange with id = {exchange_id} and name = '{exchange_name}' is now in process of being created.")
 
 
 def _version_callback(value: bool):

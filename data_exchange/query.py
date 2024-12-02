@@ -1,5 +1,6 @@
 from data_exchange.types import Hubs, Projects, Folder, Exchange, Item
-from data_exchange.utils import DX_Call, extract_entity_type, download_item_details, get_views_for_item, decode_item
+from data_exchange.utils import DX_Call, extract_entity_type, download_item_details, get_views_for_item, decode_item, \
+    DX_Mutation_Call
 
 
 def queryHubs(AUTH_TOKEN):
@@ -30,6 +31,7 @@ def queryProjects(AUTH_TOKEN, hub_id):
     """
     data = DX_Call(get_projects, AUTH_TOKEN)
     return Projects(data)
+
 
 def queryProjectFolder(AUTH_TOKEN, project_id):
     get_project_folders = f"""
@@ -134,8 +136,50 @@ def get_item_data(AUTH_TOKEN, item_id):
     return item_details
 
 
-def create_exchange_from_revit(AUTH_TOKEN, id, view, destination_folder):
-    pass
+def create_exchange_from_revit(AUTH_TOKEN, source_id, view_name, destination_folder_id, target_name):
+    mutation = f"""
+    mutation CreateExchangeFromRevit {{
+        createExchange(
+            input: {{
+                viewName: "{view_name}",
+                source: {{
+                    fileId: "{source_id}"
+                }}
+                target: {{
+                    name: "{target_name}"
+                    folderId: "{destination_folder_id}"
+                }}
+            }}
+        ) {{
+            exchange {{
+                id
+                name
+            }}
+        }}
+    }}
+    """
+    return DX_Mutation_Call(mutation, AUTH_TOKEN)["data"]["createExchange"]["exchange"]
 
-def create_exchange_from_ifc(AUTH_TOKEN, id, destination_folder):
-    pass
+
+def create_exchange_from_ifc(AUTH_TOKEN, source_id, destination_folder_id, target_name):
+    mutation = f"""
+        mutation CreateExchangeFromRevit {{
+            createExchange(
+                input: {{
+                    source: {{
+                        fileId: "{source_id}"
+                    }}
+                    target: {{
+                        name: "{target_name}"
+                        folderId: "{destination_folder_id}"
+                    }}
+                }}
+            ) {{
+                exchange {{
+                    id
+                    name
+                }}
+            }}
+        }}
+        """
+    return DX_Mutation_Call(mutation, AUTH_TOKEN)["data"]["createExchange"]["exchange"]
