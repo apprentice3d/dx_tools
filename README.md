@@ -1,4 +1,4 @@
-# Data Exchange CLI Tools
+# Data Exchange CLI Tool
 
 
 [![ver](https://img.shields.io/badge/language-python-orange.svg)](https://www.python.org/)
